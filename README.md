@@ -1,7 +1,7 @@
 GoPDQ is a persistent, disk-backed queue written in go.
 
 Basic properties:
-* fast - try to max out an SSD
+* fast - try to max out an SSD - try with both small bits of data and large
 * lightweight
 * persistent
 * safe
@@ -19,4 +19,9 @@ use:
     q.Push(val)
     q.Wait() // wait for a flush to occur
     q.Flush() // force a flush
-    q.Pop(val)
+    // maybe this
+    q.Pop(*val)
+    // or this
+    i := q.Pop() // maybe this?
+    i.Value.(type)?
+    i.Done() // deletable
