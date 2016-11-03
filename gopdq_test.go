@@ -1,6 +1,10 @@
 package gopdq
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+	"time"
+)
 
 func TestPDQ(t *testing.T) {
 	q := NewPDQ("foo")
@@ -33,13 +37,49 @@ func TestPDQ(t *testing.T) {
 	}
 }
 
+func testPDQ_N(n int, t *testing.T) time.Duration {
+	q := NewPDQ("BenchmarkPDQ_Push")
+	v := "small"
+	start := time.Now()
+	for i := 0; i < n; i++ {
+		e := q.Push(v)
+		if e != nil {
+			t.Error(e)
+		}
+	}
+	for i := 0; i < n; i++ {
+		q.Pop()
+	}
+	return time.Now().Sub(start) / time.Duration(n)
+}
+
+func testBasic_N(n int, t *testing.T) time.Duration {
+	q := make([]string, 0)
+	v := "small"
+	start := time.Now()
+	for i := 0; i<n; i++ {
+		q = append(q, v)
+	}
+	for i := 0; i<n; i++ {
+		q = q[1:]
+	}
+	return time.Now().Sub(start) / time.Duration(n)
+}
+
+func TestPDQ_N(t *testing.T) {
+	fmt.Printf("  1k; pdq: %v vs. %v\n", testPDQ_N(1000, t), testBasic_N(1000, t))
+	fmt.Printf(" 10k; pdq: %v vs. %v\n", testPDQ_N(10000, t), testBasic_N(10000, t))
+	fmt.Printf("100k; pdq: %v vs. %v\n", testPDQ_N(100000, t), testBasic_N(100000, t))
+	fmt.Printf("  1m; pdq: %v vs. %v\n", testPDQ_N(1000000, t), testBasic_N(1000000, t))
+}
+
 func benchmark_Basic(v string, b *testing.B) {
-	vals := make([]string, 0)
+	q := make([]string, 0)
 	for i := 0; i<b.N; i++ {
-		vals = append(vals, v)
+		q = append(q, v)
 	}
 	for i := 0; i<b.N; i++ {
-		vals = vals[1:]
+		q = q[1:]
 	}
 }
 
