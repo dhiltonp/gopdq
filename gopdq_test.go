@@ -13,11 +13,33 @@ func TestPDQ(t *testing.T) {
 	}
 	i := q.Pop()
 	if (*i.Value).(int) != 135 {
-		t.Errorf("incorrect value, is %#v", i)
+		t.Errorf("incorrect value, is %#v", *i.Value)
 	}
 
 	if q.Len() != 0 {
 		t.Error("q len not 0, is", q.Len())
+	}
+
+	// verify correct order
+	q.Push(1)
+	q.Push(2)
+	i = q.Pop()
+	if (*i.Value).(int) != 1 {
+		t.Errorf("incorrect value; expected 1 is %#v", *i.Value)
+	}
+	i = q.Pop()
+	if (*i.Value).(int) != 2 {
+		t.Errorf("incorrect value, expected 2 is %#v", *i.Value)
+	}
+}
+
+func benchmark_Basic(v string, b *testing.B) {
+	vals := make([]string, 0)
+	for i := 0; i<b.N; i++ {
+		vals = append(vals, v)
+	}
+	for i := 0; i<b.N; i++ {
+		vals = vals[1:]
 	}
 }
 
@@ -54,4 +76,9 @@ func BenchmarkPDQ_large(b *testing.B) {
 		v += "large "
 	}
 	benchmark_PDQ(v, b)
+}
+
+func BenchmarkBasic_small(b *testing.B) {
+	v := "small"
+	benchmark_Basic(v, b)
 }

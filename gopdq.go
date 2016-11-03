@@ -10,7 +10,7 @@ type PDQ struct {
 // Contains a small section of our queue which can be saved/loaded independently.
 type chunk struct {
 	filename string
-	popped   int64
+	popped   int
 	Deleted  []bool
 	Items    []item
 }
@@ -40,7 +40,15 @@ func (q *PDQ) Push(v interface{}) error {
 		i: len(q.chunks[0].Items),
 		Value: &v,
 	}
-	e := q.chunks[0].push(i)
+	if len(q.chunks[len(q.chunks)-1].Items) > 1000 {
+		q.chunks = append(q.chunks, chunk{
+			filename: "hmm",
+			popped:   0,
+			Deleted:  make([]bool, 0),
+			Items:    make([]item, 0),
+		})
+	}
+	e := q.chunks[len(q.chunks)-1].push(i)
 	if e != nil {
 		return e
 	}
@@ -50,6 +58,10 @@ func (q *PDQ) Push(v interface{}) error {
 
 func (q *PDQ) Pop() item {
 	q.length--
+	//fmt.Println(len(q.chunks[0].Items), q.chunks[0].popped)
+	if len(q.chunks[0].Items) == 0 {
+		q.chunks = q.chunks[1:]
+	}
 	return q.chunks[0].pop()
 }
 
