@@ -64,6 +64,7 @@ func (c *chunk) push(i item) error {
 }
 
 func (c *chunk) pop() item {
+	c.popped++
 	i := c.Items[0]
 	c.Items = c.Items[1:]
 	return i

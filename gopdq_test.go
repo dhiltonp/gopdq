@@ -20,3 +20,38 @@ func TestPDQ(t *testing.T) {
 		t.Error("q len not 0, is", q.Len())
 	}
 }
+
+func benchmark_PDQ(v string, b *testing.B) {
+	q := NewPDQ("BenchmarkPDQ_Push")
+	for i := 0; i < b.N; i++ {
+		e := q.Push(v)
+		if e != nil {
+			b.Error(e)
+		}
+	}
+
+	for i := 0; i < b.N; i++ {
+		q.Pop()
+	}
+}
+
+func BenchmarkPDQ_small(b *testing.B) {
+	v := "small"
+	benchmark_PDQ(v, b)
+}
+
+func BenchmarkPDQ_medium(b *testing.B) {
+	var v string
+	for i := 0; i<100; i++ {
+		v += "medium "
+	}
+	benchmark_PDQ(v, b)
+}
+
+func BenchmarkPDQ_large(b *testing.B) {
+	var v string
+	for i := 0; i<1000; i++ {
+		v += "large "
+	}
+	benchmark_PDQ(v, b)
+}
